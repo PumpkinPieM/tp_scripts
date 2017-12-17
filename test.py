@@ -3,13 +3,12 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 mnist = input_data.read_data_sets("MNIST_dta/", one_hot=True)
 learning_rate = 0.01
-training_epochs = 100
-batch_size = 10
+training_epochs = 1000
+batch_size = 100
 display_step = 1
 
 
 def inference(x):
-    """inference"""
     tf.constant_initializer(value=0)
     W = tf.get_variable("W", [784, 10])
     b = tf.get_variable("b", [10])
@@ -55,7 +54,7 @@ with tf.Graph().as_default():
 
     for epoch in range(training_epochs):
         avg_cost = 0
-        total_batch = int(mnist.train.num_examples/batch_size/10)
+        total_batch = int(mnist.train.num_examples/batch_size)
         for i in range(total_batch):
             mbatch_x, mbatch_y = mnist.train.next_batch(batch_size)
             feed_dict = {x: mbatch_x, y: mbatch_y}
