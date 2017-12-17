@@ -67,7 +67,6 @@ with tf.Graph().as_default():
     sess.run(init_op)
 
     for epoch in range(training_epochs):
-        print(training_epochs)
         avg_cost = 0
         total_batch = int(mnist.train.num_examples/batch_size)
         for i in range(total_batch):
@@ -92,6 +91,7 @@ with tf.Graph().as_default():
                            global_step=global_step)
 
             print("Optimization Finished!")
+            print(epoch)
 
             test_feed_dict = {
                     x: mnist.test.images,
