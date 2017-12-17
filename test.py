@@ -8,17 +8,30 @@ batch_size = 100
 display_step = 1
 
 
+def layer(input, weight_shape, bias_shape):
+    weight_stddev = (2.0/weight_shape[0])**0.5
+    w_init = tf.random_normal_initializer(stddev=weight_stddev)
+    bias_init = tf.constant_initializer(value=0)
+    W = tf.get_variable("W", weight_shape, initializer=w_init)
+    b = tf.get_variable("b", bias_shape, initializer=bias_init)
+    return tf.nn.relu(tf.matmul(input, W) + b)
+
+
 def inference(x):
-    tf.constant_initializer(value=0)
-    W = tf.get_variable("W", [784, 10])
-    b = tf.get_variable("b", [10])
-    output = tf.nn.softmax(tf.matmul(x, W) + b)
+    with tf.variable_scope("hidden_1"):
+        hidden_1 = layer(x, [784, 256], [256])
+
+    with tf.variable_scope("hidden_2"):
+        hidden_2 = layer(hidden_1, [256, 256], [256])
+
+    with tf.variable_scope("output"):
+        output = layer(hidden_2, [256, 10], [10])
+
     return output
 
 
 def loss(output, y):
-    dot_product = y*tf.log(output)
-    xentropy = -tf.reduce_sum(dot_product, reduction_indices=1)
+    xentropy = tf.nn.softmax_cross_entropy_with_logits(output, y)
     loss = tf.reduce_mean(xentropy)
     return loss
 
@@ -53,6 +66,7 @@ with tf.Graph().as_default():
     sess.run(init_op)
 
     for epoch in range(training_epochs):
+        print(training_epochs)
         avg_cost = 0
         total_batch = int(mnist.train.num_examples/batch_size)
         for i in range(total_batch):
